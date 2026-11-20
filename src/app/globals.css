@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-valencia-wine: #FF1313;
+  --color-valencia-red: #FF1313;
+  --color-valencia-red-dark: #D60A0A;
+  --color-valencia-red-light: #FEF2F2;
+  --color-valencia-wine-dark: #D60A0A;
+  --color-valencia-wine-light: #FEF2F2;
+  --color-valencia-wine-subtle: #FEE2E2;
+  --color-valencia-gold: #D4AF37;
+  --color-valencia-gold-light: #FEF9EE;
+  --color-valencia-card: #FFFFFF;
+  --color-valencia-border: #E2E8F0;
+  --color-valencia-text-main: #0F172A;
+  --color-valencia-text-muted: #64748B;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --valencia-wine: #FF1313;
+  --valencia-red: #FF1313;
+  --valencia-wine-dark: #D60A0A;
+  --valencia-wine-light: #FEF2F2;
+  --valencia-gold: #D4AF37;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #090D16;
+  --foreground: #F8FAFC;
+  --color-valencia-card: #0F172A;
+  --color-valencia-border: #1E293B;
+  --color-valencia-text-main: #F8FAFC;
+  --color-valencia-text-muted: #94A3B8;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body,
+html.dark body {
+  background-color: #090D16;
+  color: #F8FAFC;
+}
+
+/* Custom scrollbar for modern dashboards */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+.bg-valencia-wine, .bg-valencia-red {
+  background-color: #FF1313;
+}
+.hover\:bg-valencia-wine-dark:hover, .hover\:bg-valencia-red-dark:hover {
+  background-color: #D60A0A;
+}
+.text-valencia-wine, .text-valencia-red {
+  color: #FF1313;
+}
+.border-valencia-wine, .border-valencia-red {
+  border-color: #FF1313;
+}
+.bg-valencia-wine-light, .bg-valencia-red-light {
+  background-color: #FEF2F2;
+}
+.dark .bg-valencia-wine-light, .dark .bg-valencia-red-light {
+  background-color: rgba(255, 19, 19, 0.12);
+}
+
+/* Print protection for certificates and reports */
+@media print {
+  html.dark, .dark {
+    color-scheme: light !important;
+  }
+  html.dark body, .dark body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
 }

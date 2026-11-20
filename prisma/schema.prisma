@@ -1,0 +1,192 @@
+// Prisma Schema for Valencia School Management System
+// Demo Plan: PostgreSQL + Prisma (also compatible with SQLite for zero-config local testing)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  PARENT
+  STUDENT
+}
+
+enum ResultStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  PUBLISHED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum FeeStatus {
+  PAID
+  PARTIAL
+  UNPAID
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role      @default(STUDENT)
+  avatar       String?
+  phone        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  teacher      Teacher?
+  student      Student?
+  parent       Parent?
+}
+
+model Teacher {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  staffId        String    @unique
+  fullName       String
+  qualification  String
+  specialization String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  classes        Class[]
+  subjects       Subject[]
+  resultsEntered Result[]
+}
+
+model Parent {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  fullName   String
+  phone      String
+  occupation String?
+  address    String?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  children   Student[]
+}
+
+model Class {
+  id          String       @id @default(cuid())
+  name        String       @unique // e.g., "JSS 2A", "Primary 4B", "SS 1 Science"
+  level       String       // "PRIMARY", "JSS", "SSS"
+  arm         String       // "A", "B"
+  teacherId   String?
+  classTeacher Teacher?    @relation(fields: [teacherId], references: [id])
+
+  students    Student[]
+  subjects    Subject[]
+  attendances Attendance[]
+  results     Result[]
+}
+
+model Subject {
+  id        String   @id @default(cuid())
+  name      String   // e.g., "Mathematics", "English Language", "Basic Science"
+  code      String   // e.g., "MTH-JSS2", "ENG-JSS2"
+  classId   String
+  teacherId String?
+
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  results   Result[]
+}
+
+model Student {
+  id           String       @id @default(cuid())
+  userId       String       @unique
+  admissionNo  String       @unique // e.g., "VAL/2023/042"
+  firstName    String
+  lastName     String
+  gender       String       // "Male" | "Female"
+  dateOfBirth  String
+  classId      String
+  parentId     String?
+  
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class        Class        @relation(fields: [classId], references: [id])
+  parent       Parent?      @relation(fields: [parentId], references: [id])
+
+  attendances  Attendance[]
+  results      Result[]
+  fees         Fee[]
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  studentId String
+  classId   String
+  date      String           // YYYY-MM-DD
+  status    AttendanceStatus @default(PRESENT)
+  remarks   String?
+
+  student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class     Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, date])
+}
+
+model Result {
+  id          String       @id @default(cuid())
+  studentId   String
+  subjectId   String
+  classId     String
+  session     String       // e.g., "2024/2025"
+  term        String       // "1st Term", "2nd Term", "3rd Term"
+  caScore     Float        // Continuous Assessment (max 40)
+  examScore   Float        // Examination (max 60)
+  totalScore  Float        // Total (max 100)
+  grade       String       // "A", "B", "C", "D", "E", "F"
+  remark      String       // "Excellent", "Credit", "Pass", "Fail"
+  status      ResultStatus @default(DRAFT)
+  teacherId   String
+  approvedBy  String?
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  student     Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject     Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  class       Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+
+  @@unique([studentId, subjectId, session, term])
+}
+
+model Announcement {
+  id             String   @id @default(cuid())
+  title          String
+  content        String
+  targetAudience String   // "ALL", "TEACHERS", "PARENTS", "STUDENTS"
+  priority       String   // "NORMAL", "HIGH", "URGENT"
+  authorName     String
+  createdAt      DateTime @default(now())
+}
+
+model Fee {
+  id          String    @id @default(cuid())
+  studentId   String
+  session     String
+  term        String
+  title       String    // "First Term School Fees 2024/2025"
+  totalAmount Float     // in NGN
+  amountPaid  Float     // in NGN
+  balance     Float     // in NGN
+  status      FeeStatus @default(UNPAID)
+  dueDate     String
+  breakdown   String    // JSON stringified fee items
+
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
