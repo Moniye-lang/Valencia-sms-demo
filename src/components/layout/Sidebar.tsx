@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserSession, Role } from '@/lib/types';
 import {
@@ -18,11 +19,14 @@ import {
   UserCircle,
   Award,
   HelpCircle,
+  X,
 } from 'lucide-react';
 
 interface SidebarProps {
   session: UserSession;
   pendingApprovalsCount?: number;
+  isMobileOpen?: boolean;
+  onClose?: () => void;
 }
 
 interface NavItem {
@@ -32,7 +36,12 @@ interface NavItem {
   badge?: number | string;
 }
 
-export function Sidebar({ session, pendingApprovalsCount = 0 }: SidebarProps) {
+export function Sidebar({
+  session,
+  pendingApprovalsCount = 0,
+  isMobileOpen = false,
+  onClose,
+}: SidebarProps) {
   const pathname = usePathname();
 
   const getNavLinks = (role: Role): NavItem[] => {
@@ -76,23 +85,27 @@ export function Sidebar({ session, pendingApprovalsCount = 0 }: SidebarProps) {
 
   const links = getNavLinks(session.role);
 
-  return (
-    <aside className="w-64 bg-white dark:bg-slate-900 border-r border-stone-200 dark:border-slate-800 sticky top-[105px] h-[calc(100vh-105px)] self-start overflow-y-auto p-4 flex flex-col justify-between shrink-0 transition-colors z-30">
+  const renderNavContent = (isMobile = false) => (
+    <>
       <div className="space-y-1">
         <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-slate-500">
           {session.role} Menu
         </div>
         <nav className="space-y-1">
           {links.map((link) => {
-            const isActive = pathname === link.href || (link.href !== `/${session.role.toLowerCase()}` && pathname.startsWith(link.href));
+            const isActive =
+              pathname === link.href ||
+              (link.href !== `/${session.role.toLowerCase()}` && pathname.startsWith(link.href));
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${isActive
+                onClick={isMobile ? onClose : undefined}
+                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  isActive
                     ? 'bg-[#FF1313] text-white shadow-xs font-semibold'
                     : 'text-stone-700 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-800 hover:text-stone-900 dark:hover:text-white'
-                  }`}
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <span className={isActive ? 'text-white' : 'text-[#FF1313]'}>{link.icon}</span>
@@ -100,8 +113,9 @@ export function Sidebar({ session, pendingApprovalsCount = 0 }: SidebarProps) {
                 </div>
                 {link.badge !== undefined && (
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-amber-400 text-stone-950' : 'bg-[#FF1313] text-white'
-                      }`}
+                    className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                      isActive ? 'bg-amber-400 text-stone-950' : 'bg-[#FF1313] text-white'
+                    }`}
                   >
                     {link.badge}
                   </span>
@@ -114,6 +128,7 @@ export function Sidebar({ session, pendingApprovalsCount = 0 }: SidebarProps) {
         <div className="pt-3 mt-3 border-t border-stone-100 dark:border-slate-800">
           <Link
             href="/manual"
+            onClick={isMobile ? onClose : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
               pathname === '/manual'
                 ? 'bg-[#FF1313] text-white shadow-xs font-semibold'
@@ -137,6 +152,66 @@ export function Sidebar({ session, pendingApprovalsCount = 0 }: SidebarProps) {
           </div>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (visible on md and up) */}
+      <aside className="hidden md:flex w-64 bg-white dark:bg-slate-900 border-r border-stone-200 dark:border-slate-800 sticky top-[105px] h-[calc(100vh-105px)] self-start overflow-y-auto p-4 flex-col justify-between shrink-0 transition-colors z-30">
+        {renderNavContent(false)}
+      </aside>
+
+      {/* Mobile Drawer (visible on < md when opened) */}
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 bg-slate-950/60 dark:bg-black/75 backdrop-blur-xs z-50 md:hidden transition-opacity duration-300 ${
+          isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white dark:bg-slate-900 border-r border-stone-200 dark:border-slate-800 z-50 p-4 flex flex-col justify-between shadow-2xl md:hidden overflow-y-auto transition-transform duration-300 ease-in-out ${
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        aria-label={`${session.role} Mobile Navigation`}
+      >
+        <div>
+          {/* Mobile Drawer Header */}
+          <div className="flex items-center justify-between pb-3 mb-2 border-b border-stone-200 dark:border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <Image
+                src="/logo-transparent.png"
+                alt="Valencia Schools"
+                width={32}
+                height={29}
+                className="h-7 w-auto object-contain"
+              />
+              <div>
+                <p className="font-serif font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                  Valencia Schools
+                </p>
+                <p className="text-[10px] text-[#FF1313] font-bold uppercase tracking-wider">
+                  {session.role} Portal
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Close navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {renderNavContent(true)}
+        </div>
+      </aside>
+    </>
   );
 }

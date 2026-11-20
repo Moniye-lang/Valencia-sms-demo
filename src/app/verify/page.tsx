@@ -48,14 +48,14 @@ export default async function VerifyIndexPage({ searchParams }: VerifyIndexProps
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 lg:px-8 relative transition-colors">
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative transition-colors">
+      <div className="absolute top-3 right-3 sm:top-6 sm:right-6">
         <ThemeToggle showLabel size="md" />
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
         {/* Header Branding */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-2.5 sm:space-y-3 pt-6 sm:pt-0">
           <div className="inline-flex items-center justify-center mb-1">
             <Image
               src="/logo-transparent.png"
@@ -63,10 +63,10 @@ export default async function VerifyIndexPage({ searchParams }: VerifyIndexProps
               width={88}
               height={78}
               priority
-              className="w-20 h-auto object-contain drop-shadow-md"
+              className="w-16 sm:w-20 h-auto object-contain drop-shadow-md"
             />
           </div>
-          <h1 className="text-3xl font-serif font-black text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 dark:text-white tracking-tight">
             Valencia Schools Public Verification Gateway
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 max-w-lg mx-auto">

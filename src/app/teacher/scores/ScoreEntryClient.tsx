@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from 'react';
 import { Teacher, ClassRoom, Subject, Student, ResultRecord } from '@/lib/types';
-import { saveScoreAction, saveBatchScoresAction, submitScoresForApprovalAction } from '@/lib/actions';
+import { saveBatchScoresAction, submitScoresForApprovalAction } from '@/lib/actions';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { StatusBadge } from '@/components/ui/Badge';
@@ -28,7 +28,6 @@ interface ScoreEntryClientProps {
 }
 
 export default function ScoreEntryClient({
-  teacher,
   classes,
   subjects,
   students,
@@ -334,7 +333,7 @@ export default function ScoreEntryClient({
           />
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400 w-full sm:w-auto">
           <span>Rows per page:</span>
           <select
             value={pageSize}

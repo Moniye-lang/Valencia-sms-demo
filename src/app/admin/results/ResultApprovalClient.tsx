@@ -283,7 +283,7 @@ export default function ResultApprovalClient({
           />
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400 w-full sm:w-auto">
           <span>Rows per page:</span>
           <select
             value={pageSize}
