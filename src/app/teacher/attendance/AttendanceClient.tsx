@@ -21,7 +21,7 @@ export default function AttendanceClient({
   const [selectedClassId, setSelectedClassId] = useState<string>(classes[0]?.id || '');
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [pageSize, setPageSize] = useState<number>(20);
+  const pageSize = 20;
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [isPending, startTransition] = useTransition();

@@ -1,4 +1,4 @@
-import { Student, ClassRoom, ResultRecord, Teacher } from './types';
+import { Student, ClassRoom, ResultRecord } from './types';
 
 export interface VerificationCertificate {
   certificateId: string;
@@ -39,7 +39,8 @@ export interface VerificationCertificate {
 export function generateCertificateId(admissionNo: string, term: string = '1st Term'): string {
   // e.g. VAL/2024/001 -> VAL-TR-2024-001
   const cleanAdm = admissionNo.replace(/\//g, '-');
-  return `${cleanAdm}-T1`.toUpperCase();
+  const termCode = term.startsWith('2') ? 'T2' : term.startsWith('3') ? 'T3' : 'T1';
+  return `${cleanAdm}-${termCode}`.toUpperCase();
 }
 
 /**

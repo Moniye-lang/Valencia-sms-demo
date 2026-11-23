@@ -4,7 +4,7 @@ import { getDatabase } from '@/lib/data-store';
 import { PortalLayout } from '@/components/layout/PortalLayout';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/Badge';
-import { BookOpen, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export default async function AdminStaffPage() {
   const session = await requireRole(['ADMIN']);

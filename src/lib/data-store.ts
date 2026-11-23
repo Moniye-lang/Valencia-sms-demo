@@ -590,7 +590,7 @@ function getInitialSeedData(): DatabaseSchema {
       timetables.push({
         id: `tt_${ttCounter++}`,
         classId: 'cls_jss2a',
-        day: day as any,
+        day: day as TimetableSlot['day'],
         time: p.time,
         period: p.period,
         subjectName: s.subject,

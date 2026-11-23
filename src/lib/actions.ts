@@ -3,8 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import {
-  getCurrentSession,
-  requireAuth,
   requireRole,
   assertClassAccess,
   setServerSession,
@@ -16,7 +14,7 @@ import { getDatabase, saveDatabase, calculateGrade, resetDatabaseToSeed } from '
 import { Role, AttendanceStatus, UserSession } from './types';
 
 // Authentication Actions
-export async function loginAction(prevState: any, formData: FormData) {
+export async function loginAction(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -39,7 +37,7 @@ export async function logoutAction() {
 
 export async function switchDemoRoleAction(role: Role) {
   const db = getDatabase();
-  let targetUser = db.users.find((u) => u.role === role);
+  const targetUser = db.users.find((u) => u.role === role);
 
   if (!targetUser) {
     throw new Error(`No demo user found for role ${role}`);
@@ -385,7 +383,7 @@ export async function createStudentAction(formData: FormData) {
   const fullName = `${firstName} ${lastName}`;
 
   // Link to parent or default parent
-  let parent = db.parents.find((p) => p.email.toLowerCase() === parentEmail.toLowerCase()) || db.parents[0];
+  const parent = db.parents.find((p) => p.email.toLowerCase() === parentEmail.toLowerCase()) || db.parents[0];
 
   // Create User
   db.users.push({
@@ -444,9 +442,9 @@ export async function createAnnouncementAction(formData: FormData) {
   const session = await requireRole(['ADMIN']);
   const title = (formData.get('title') as string).trim();
   const content = (formData.get('content') as string).trim();
-  const targetAudience = (formData.get('targetAudience') as any) || 'ALL';
-  const priority = (formData.get('priority') as any) || 'NORMAL';
-  const category = (formData.get('category') as any) || 'Academic';
+  const targetAudience = (formData.get('targetAudience') as 'ALL' | 'TEACHERS' | 'PARENTS' | 'STUDENTS') || 'ALL';
+  const priority = (formData.get('priority') as 'NORMAL' | 'HIGH' | 'URGENT') || 'NORMAL';
+  const category = (formData.get('category') as 'Academic' | 'Administrative' | 'Sports' | 'Event') || 'Academic';
 
   if (!title || !content) {
     return { error: 'Please enter title and content' };

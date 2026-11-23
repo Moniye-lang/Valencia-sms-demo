@@ -19,13 +19,11 @@ export function CertificateQRCode({
   showDetails = true,
 }: CertificateQRCodeProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
-  const [verifyUrl, setVerifyUrl] = useState<string>(`/verify/${encodeURIComponent(certificateId)}`);
 
   useEffect(() => {
     // Generate full URL if in browser
     const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
     const fullUrl = `${origin}/verify/${encodeURIComponent(certificateId)}`;
-    setVerifyUrl(fullUrl);
 
     // Generate high error correction QR code
     QRCode.toDataURL(fullUrl, {
@@ -58,7 +56,7 @@ export function CertificateQRCode({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={qrDataUrl}
-              alt={`QR Verification Code for Certificate ${certificateId}`}
+              alt={studentName ? `QR Verification Code for ${studentName}` : `QR Verification Code for Certificate ${certificateId}`}
               width={size}
               height={size}
               className="rounded-lg object-contain transition-transform group-hover:scale-102 bg-white p-1"
